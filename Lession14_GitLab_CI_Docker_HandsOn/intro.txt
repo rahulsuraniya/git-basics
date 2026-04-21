@@ -1,0 +1,136 @@
+: << 'INFO'
+
+Chapter 14: GitLab CI + DOcker (Hands-On)
+
+What you will Build in This Chapter
+ By the end of this chapter, you will have:
+ - A GitLab pipeline that 
+ - Builds a Docker image
+ - Pushes it to Docker Hub automatically
+ - Uses secure CI Variables (secrets)
+
+ Finao Pipeline Flow (Industry Standard)
+
+ git push --> Gitlab CI Pipeline --> Dokcer Image Build --> Push Image to DOkcer Hub
+
+
+Concepts you'll Oearn Very important
+ - Docker in Docker (docker: dind)
+ - GitLab CI image and services
+ - Secure secrets using  CI/CD Variables
+ - Real CI build logs used in interviews
+
+
+STEP1: Prepare Your GitLab Project
+ We'll continue using your exixting GitLab repo
+ (example: gitlab-devops).
+
+ Repo Structure (Check)
+ Your repo should have:
+
+ gitlab-devops/
+ --Dockerfile
+ --.gitlab-ci.yml
+
+
+STEP2: Create a Simple DOckerfile
+if you dont alreadh have one, add this:
+
+Dockerfile
+FROM nginx:alpine
+COPY . /user/share/nginx/html
+
+-Very simple
+-Easy to test
+-Perfect for CI learning
+
+commit it:
+git add Dockerfile
+git commit -m "Add Dockerfile for CI demo"
+git push
+
+
+STEP3: Add Docker Hub Credentials to gitlab (Very Important)
+Never hard-d0ce passwords in .gitlab-ci.yml
+
+Add CI/CD Variables
+In GitLab
+ 1: Go to Project --> Setting --> CI/CD
+ 2: Expand Variables
+ 3: Add these exact variables:
+
+ Key			Value
+ DOCKER_USERNAME	your_dockerhub_username
+ DOCKER_PASSWORD	your_docke_password
+
+ Type: Varibale
+ Environment scope: All
+ Protect off (for learning)
+
+ This is real DevOps security practice.
+
+
+ STEP4: Write the GitLab CI Pipeline (Core Part)
+
+ .gitlab-ci.yml
+
+ Replace content with this:
+
+stages:
+  - build
+
+build_docker_image:
+  stage: build
+  image: docker:25
+  services:
+    _ docker:25-dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker info
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+  script:
+    - docker build -t $DOCKER_USERNAME/gitlab-ci-demo:latest .
+    - docker push $DOCKER_USERNAME/gitlab-ci-demo:latest
+
+
+commit & push:
+git add .gitlab-ci.yml
+git commit -m "Add GitLab CI Docker build and push"
+git push
+
+
+STEP5: Watch the Pipeline Like a DevOps Engineer
+
+1: Go to CI/CD --> Pipelin es
+2: Click the latest pipeline 
+3: Open job build_docker_image
+4: Watch logs carefully
+
+you should see:
+- Docker image building 
+- DOcker login success
+- Docker iamge pushed to Docker Hub
+
+STEP6: Verify on Docker Hub
+Go to https://hub.docker.com
+you should see:
+your_username/gitlab-ci-demo
+Tag:
+latest
+
+This is a Real CI/CD pipeline.
+Many freshers never reach this level.
+
+
+NOTE:
+-------------------------------------------------
+Interview -Grade Explanation (Remmber This)
+
+
+
+
+'INFO'

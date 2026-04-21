@@ -1,0 +1,12 @@
+: << 'INFO'
+
+ASSIGNMETN - CHAPTER 14 (MANDATORY)
+
+Please confirm all of these:
+
+1: Pipeline ran successfully
+2: Docker image built in GitLab CI
+3: Image pushed to Docker Hub
+4: You can see the image in Docker Hub UI
+
+'INFO'
